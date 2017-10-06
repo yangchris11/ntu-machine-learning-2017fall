@@ -1,100 +1,51 @@
+import csv 
+import numpy as np
+from numpy.linalg import inv
+import random
+import math
 import sys
-import time 
-import numpy as np 
-import pandas as pd 
-
-TYPE = 18  # {AMB_TEMP,CH4,CO,NMHC,NO,NO2,NOx,O3,PM10,PM2.5,RAINFALL,RH,SO2,THC,WD_HR,WIND_DIREC,WIND_SPEED,WS_HR}
-PM25 = 9 # PM2.5 = no.9 element 
-MONTH = 12 
-HOUR = 24 
-TRAININGDATE = 20 
-KEY = [0,0,0,0]
-
-def sliceData( rawData ):
-    
-    slicedData = []
-    trainingSet = []
-    for mm in range(MONTH):
-        for hh in range(mm*TRAININGDATE*HOUR-9):
-            for i in range(9):
-                slicedData.extend(rawData[hh+i])
-            ans = rawData[hh+PM25][PM25]
-            trainingSet.append([ans,slicedData])
-            slicedData = []
-
-    return trainingSet
 
 
+data = []
+# 每一個維度儲存一種污染物的資訊
+for i in range(18):
+	data.append([])
 
-def readTestingData( filename ):
-    
-    originalcsvData = pd.read_csv(filename)
-    rawData = []
-
-    for mm in range(MONTH) :
-        for dd in range(TRAININGDATE) :
-            for hh in range(HOUR) :
-                tmp = originalcsvData.ix[dd*18:dd*18+TYPE-1,str(hh)].values
-                for i in range(TYPE) :
-                    if tmp[i] == 'NR' : 
-                        tmp[i] = 0 
-                    else :
-                        tmp[i] = float(tmp[i])
-                rawData.append(tmp)
-
-    trainingSet = sliceData(rawData)
-
-    return trainingSet
-
-
+n_row = 0
+text = open('train.csv', 'r', encoding='big5') 
+row = csv.reader(text , delimiter=",")
+for r in row:
+    # 第0列沒有資訊
+    if n_row != 0:
+        # 每一列只有第3-27格有值(1天內24小時的數值)
+        for i in range(3,27):
+            if r[i] != "NR":
+                data[(n_row-1)%18].append(float(r[i]))
+                print (r[i])
+            else:
+                data[(n_row-1)%18].append(float(0))	
+    n_row = n_row+1
+text.close()
 
 
+x = []
+y = []
+# 每 12 個月
+for i in range(12):
+    # 一個月取連續10小時的data可以有471筆
+    for j in range(471):
+        x.append([])
+        # 18種污染物
+        for t in range(18):
+            # 連續9小時
+            for s in range(9):
+                x[471*i+j].append(data[t][480*i+j+s] )
+                y.append(data[9][480*i+j+9])
+x = np.array(x)
+y = np.array(y)
 
-if __name__ == '__main__' : 
+# add square term
+# x = np.concatenate((x,x**2), axis=1)
 
-    tStart = time.time()
-    
-    _trainingFilename = "olddata/train.csv"
-    trainingSet = readTestingData(_trainingFilename)
-
-
-    print "FUCK"
-    
-
-    tEnd = time.time() 
-
-    print "Run time :" , tEnd-tStart , "second(s)" 
-
-'''
-
-def AdaGrad(f, gf, n, trainSet, theta,T):
-    gd_sq_sum = np.zeros(n, dtype=float)
-    eta = 1
-    e = 1e-8
-    for t in range(1, T):
-        g = gf(trainSet, theta)
-        gd_sq_sum += g*g
-        for i in range(0, n):
-            theta[i] -= eta * g[i] / np.sqrt(gd_sq_sum[i] + e)
-        grad_norm = np.linalg.norm(gf(trainSet, theta))
-        #print "Itr = %d" % t
-        #print "f(theta) =", f(trainSet, theta)
-        #print "norm(grad) =", grad_norm
-        if grad_norm < 1e-3:
-            return theta
-return theta
-
-if __name__== '__main__':
-  trainSet = train_data_parser("data/train.csv")
-  testSet = test_data_parser("data/test_X.csv")
-  
-  w_init = np.zeros(163)
-  w = AdaGrad(quadratic_loss, grad_f, 163, trainSet, w_init, 100000)
-  
-  labels = [getTestLabel(testData, w) for testData in testSet]
-  ids = ['id_'+str(i) for i in range(len(labels))]
-  
-  output = pd.DataFrame({'id': ids, 'value': labels})
-output.to_csv("linear_regression.csv", index=False) 
-
-'''
+# add bias
+x = np.concatenate((np.ones((x.shape[0],1)),x), axis=1)
