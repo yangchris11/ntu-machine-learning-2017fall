@@ -1,12 +1,9 @@
 import sys
-import csv 
-import time 
+import csv
 import random as rd 
 import numpy as np 
-import pandas as pd 
-import matplotlib.pyplot as plt
 
-np.set_printoptions(suppress=True)
+# np.set_printoptions(suppress=True)
 
 TYPE = 18  
 [AMB_TEMP,CH4,CO,NMHC,NO,NO2,NOx,O3,PM10,PM25,RAINFALL,RH,SO2,THC,WD_HR,WIND_DIREC,WIND_SPEED,WS_HR] = range(18)
@@ -25,51 +22,6 @@ TRAININGDATE = 20
 TESTCASE = 240 
 TESTHOUR =  9 
 FEATURENUM = len(wanted_features)+1
-
-def sliceData( rawData ):
-    
-    slicedData = []
-    trainingSet = []
-    num = 0 
-
-    print (len(rawData))
-  
-    for mm in range(MONTH):
-        for hh in range(TRAININGDATE*HOUR-9):
-            for i in range(9):
-                for j in wanted_features :
-                    if j == 9 :
-                        if rawData[mm*480+hh+i][j] == -1 :
-                            rawData[mm*480+hh+i][j] = rawData[mm*480+hh+i-1][j]
-                    slicedData.append(float(rawData[mm*480+hh+i][j]))
-            for i in range(9):
-                slicedData.append(float(slicedData[i*7+1]**2))
-            ans = rawData[mm*480+hh+9][PM25]
-            trainingSet.append([ans,np.array(slicedData)])
-            slicedData = []
-            num += 1 
-
-    return trainingSet
-
-def readTrainingData( filename ):
-    
-    originalcsvData = pd.read_csv(filename,encoding='big5')
-    rawData = []
-
-    for mm in range(MONTH) :
-        for dd in range(TRAININGDATE) :
-            for hh in range(HOUR) :
-                tmp = originalcsvData.ix[mm*360+dd*18:mm*360+dd*18+TYPE-1,str(hh)].values
-                for i in range(TYPE) :
-                    if tmp[i] == 'NR' : 
-                        tmp[i] = 0 
-                    else :
-                        tmp[i] = float(tmp[i])
-                rawData.append(tmp)
-
-    trainingSet = sliceData(rawData)
-
-    return trainingSet
 
 def readTestingData( filename ):
 
@@ -100,106 +52,16 @@ def readTestingData( filename ):
                 testingSet.append(np.array(feat))
 
     return testingSet 
-        
-def shuffletrainingData( trainingSet ):
-    
-    num = len(trainingSet)
-    rd.seed(666)
-    _trainSet = []
-    _valSet = []
-    _testSet = []
-    for i in range(num):
-        sample = rd.randint(1,3) 
-        if sample == 1 :
-            _trainSet.append(trainingSet[i])
-        elif sample == 3 :
-            _valSet.append(trainingSet[i])
-        else :
-            _testSet.append(trainingSet[i])
-
-    return _trainSet,_valSet,_testSet
-
 
 if __name__ == '__main__' : 
 
-    tStart = time.time()
-
-    # _trainingFilename = sys.argv[1]
-    # _testingFilename  = sys.argv[2]
-    _ansFilename      = sys.argv[1]
-    # _logFilename      = sys.argv[2]
+    _testingFilename  = sys.argv[1]
+    _ansFilename      = sys.argv[2]
     
-    _trainingFilename = "train.csv"
-    _testingFilename = "test.csv"
-
-    trainingSet = readTrainingData(_trainingFilename)
     testingSet = readTestingData(_testingFilename)
 
-    _trainSet,_valSet,_testSet = shuffletrainingData( trainingSet )
-
-    trainingSet = _trainSet
-
-    rd.shuffle(_trainSet)
-
-
-    history_b = []
-
-    iteration = 10000
-
-    b = 0.0 
-    w = np.zeros(FEATURENUM*TESTHOUR)
-    w[57] = 1.0
-    lr_b = 0.05
-    lr_w = np.full(FEATURENUM*TESTHOUR,0.03)
-    r = 2.5
-
-    sigma_b = 0.0
-    sigma_w = np.zeros(FEATURENUM*TESTHOUR)
-
-    for i in range(iteration) :
-
-        if i%100 == 0 and i != 0 :
-            print ("iter",i,"............done   error=",error/len(_trainSet)) 
-
-        grad_b = 0.0
-        grad_w = np.zeros(FEATURENUM*TESTHOUR)
-         
-        error = 0 
-
-        for n in range(len(_trainSet)) : 
-            
-            L = trainingSet[n][0] - b - trainingSet[n][1].dot(w)
-            error += L**2
-
-
-            grad_b =  2*r*b - 2*L 
-            grad_w =  2*r*w - 2*L*trainingSet[n][1] 
-
-            sigma_b += grad_b**2 
-            sigma_w += grad_w**2
-
-            b = b - lr_b/np.sqrt(sigma_b)*grad_b
-            w = w - lr_w/np.sqrt(sigma_w)*grad_w
-
-        history_b.append(b)
-
-    print (b) 
-    print (w) 
-    
-    
-    tEnd = time.time() 
-
-    print ("Run time :" , tEnd-tStart , "second(s)")
-
-    error = 0
-
-    # for i in range(len(_testSet)):
-    #     L = _testSet[i][0] - b - _testSet[i][1].dot(w)
-    #     error += L**2
- 
-    # error /= len(_testSet)
-
-    print ("Estimated error:" , error)
+    b = 0.00997487759548
+    w = np.load('model.npy')
 
     with open(_ansFilename,'w') as ansFile:
         ansFile.write('id,value')
