@@ -3,7 +3,7 @@ import sys
 import math
 import random as rd
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
 
@@ -25,11 +25,10 @@ np.set_printoptions(suppress=True)
 
 if __name__ == '__main__' : 
 
-    # _trainingFilename = sys.argv[1]
-    # _testingFilename  = sys.argv[2]
-    _ansFilename      = sys.argv[1]
+    _testingFilename  = sys.argv[1]
+    _ansFilename      = sys.argv[2]
     _trainingFilename = 'train.csv'
-    _testingFilename = 'test.csv'
+    # _testingFilename = 'test.csv'
 
     data = []
 
@@ -79,25 +78,19 @@ if __name__ == '__main__' :
     # add bias
     x = np.concatenate((x,np.ones((x.shape[0],1))), axis=1)
 
-    print (x[0])
-    print (y[0])
-    print (y[1])
-
     print ("feature num : ",len(x[0]))
     print ("training num : ",len(x))
 
     trainingSet = x 
 
-    x = x[0:2000]
-    y = y[0:2000]
 
-    iteration = 50000
+    iteration = 12000
 
     # b = 1.0 
     w = np.zeros(len(x[0]))
     w[17] = 1.0
     # lr_b = 10
-    lr_w = np.full(len(x[0]),10)
+    lr_w = np.full(len(x[0]),0.01)
     r = 2.5
 
     # sigma_b = 0.0
@@ -108,33 +101,36 @@ if __name__ == '__main__' :
 
     x_t = x.transpose()
     s_gra = np.zeros(len(x[0]))
-    l_rate = 0.01
+    l_rate = 0.1
 
     for i in range(iteration):
         hypo = np.dot(x,w)
         loss = hypo - y
         cost = np.sum(loss**2) / len(x)
         cost_a  = math.sqrt(cost)
-        gra = np.dot(x_t,loss) +2*r*w
+        gra = np.dot(x_t,loss) + 2*r*w
         s_gra += gra**2
         ada = np.sqrt(s_gra)
         w = w - l_rate * gra/ada
         print ('iteration: %d | Cost: %f  ' % ( i,cost_a))
+        history_err.append(cost_a)
 
     # for i in range(iteration) :
 
+        
+
     #     if i%100 == 0 and i != 0 :
-    #         print ("iter",i,"............done   error=",error) 
+    #         print ("iter",i,"............done   error=",np.sqrt(error/3000)) 
 
     #     # grad_b = 0.0
     #     grad_w = np.zeros(len(x[0]))
          
     #     error = 0 
 
-    #     for n in range(2000): 
+    #     for n in range(len(x[0])): 
             
     #         L = y[n] - trainingSet[n].dot(w)
-    #         error += L
+    #         error += L**2
 
     #         # grad_b =  2*r*b - 2*L 
     #         grad_w =  2*r*w - 2*L*trainingSet[n]
@@ -147,17 +143,11 @@ if __name__ == '__main__' :
 
     #     history_err.append(error)
 
-    # w = np.matmul(np.matmul(inv(np.matmul(x.transpose(),x)),x.transpose()),y)
-
-    print (w)
-
-    # plt.plot(history_err)
-    # plt.show()
 
 
-    for i in range(10) :
-        print (trainingSet[i].dot(w))
-        print (y[i])
+    # w2 = np.matmul(np.matmul(inv(np.matmul(x.transpose(),x)),x.transpose()),y)
+
+
     
 
     test_x = []
@@ -201,7 +191,7 @@ if __name__ == '__main__' :
         ans[i].append(a)
 
 
-    filename = "predict.csv"
+    filename = _ansFilename
     text = open(filename, "w+")
     s = csv.writer(text,delimiter=',',lineterminator='\n')
     s.writerow(["id","value"])
