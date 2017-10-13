@@ -63,10 +63,6 @@ if __name__ == '__main__' :
     b = 0.0239096491573
     w = np.load('model_best.npy')
 
-    print (w)
-    print (len(w))
-
-
     test_x = []
     n_row = 0
     f_row = 0 
@@ -93,8 +89,6 @@ if __name__ == '__main__' :
         f_row += 1 
     text.close()
     testingSet = np.array(test_x)
-
-    print (testingSet[0])
 
     with open(_ansFilename,'w') as ansFile:
         ansFile.write('id,value')

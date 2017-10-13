@@ -78,8 +78,8 @@ if __name__ == '__main__' :
     # add bias
     x = np.concatenate((x,np.ones((x.shape[0],1))), axis=1)
 
-    print ("feature num : ",len(x[0]))
-    print ("training num : ",len(x))
+    # print ("feature num : ",len(x[0]))
+    # print ("training num : ",len(x))
 
     trainingSet = x 
 
@@ -110,7 +110,7 @@ if __name__ == '__main__' :
         s_gra += gra**2
         ada = np.sqrt(s_gra)
         w = w - l_rate * gra/ada
-        print ('iteration: %d | Cost: %f  ' % ( i,cost_a))
+        # print ('iteration: %d | Cost: %f  ' % ( i,cost_a))
         history_err.append(cost_a)
 
     test_x = []
