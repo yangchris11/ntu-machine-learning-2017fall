@@ -9,7 +9,7 @@ from numpy.linalg import inv
 
 TYPE = 18  
 [AMB_TEMP,CH4,CO,NMHC,NO,NO2,NOx,O3,PM10,PM25,RAINFALL,RH,SO2,THC,WD_HR,WIND_DIREC,WIND_SPEED,WS_HR] = range(18)
-wanted_features = [ 7,9,12,14,15,16,17 ]
+wanted_features = [ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17 ]
 wanted_features = [ int(i) for i in wanted_features ]
 # O3 = 7
 # PM25 = 9
@@ -61,14 +61,14 @@ if __name__ == '__main__' :
             for t in range(18):
                 # 連續9小時
                 if t in wanted_features :
-                    for s in range(9):
+                    for s in range(5):
                         if t == 9 and data[t][480*i+j+s] == -1 :
                             data[t][480*i+j+s] = data[t][480*i+j+s-1]
                         x[471*i+j].append(data[t][480*i+j+s] )
                     if t == 9:
-                        for s in range(9):
+                        for s in range(5):
                             x[471*i+j].append(data[t][480*i+j+s]**2)
-            y.append(data[9][480*i+j+9])
+            y.append(data[9][480*i+j+5])
     x = np.array(x)
     y = np.array(y)
 
@@ -84,14 +84,12 @@ if __name__ == '__main__' :
     trainingSet = x 
 
 
-    iteration = 12000
+    iteration = 10000
 
     # b = 1.0 
     w = np.zeros(len(x[0]))
-    w[17] = 1.0
-    # lr_b = 10
-    lr_w = np.full(len(x[0]),0.01)
-    r = 2.5
+    w[8] = 1.0
+    r = 0.1
 
     # sigma_b = 0.0
     sigma_w = np.zeros(len(x[0]))
@@ -101,7 +99,7 @@ if __name__ == '__main__' :
 
     x_t = x.transpose()
     s_gra = np.zeros(len(x[0]))
-    l_rate = 0.1
+    l_rate = 10
 
     for i in range(iteration):
         hypo = np.dot(x,w)
@@ -114,41 +112,6 @@ if __name__ == '__main__' :
         w = w - l_rate * gra/ada
         print ('iteration: %d | Cost: %f  ' % ( i,cost_a))
         history_err.append(cost_a)
-
-    # for i in range(iteration) :
-
-        
-
-    #     if i%100 == 0 and i != 0 :
-    #         print ("iter",i,"............done   error=",np.sqrt(error/3000)) 
-
-    #     # grad_b = 0.0
-    #     grad_w = np.zeros(len(x[0]))
-         
-    #     error = 0 
-
-    #     for n in range(len(x[0])): 
-            
-    #         L = y[n] - trainingSet[n].dot(w)
-    #         error += L**2
-
-    #         # grad_b =  2*r*b - 2*L 
-    #         grad_w =  2*r*w - 2*L*trainingSet[n]
-
-    #         # sigma_b += grad_b**2 
-    #         sigma_w += grad_w**2
-
-    #         # b = b - lr_b/np.sqrt(sigma_b)*grad_b
-    #         w = w - lr_w/np.sqrt(sigma_w)*grad_w
-
-    #     history_err.append(error)
-
-
-
-    # w2 = np.matmul(np.matmul(inv(np.matmul(x.transpose(),x)),x.transpose()),y)
-
-
-    
 
     test_x = []
     n_row = 0
@@ -164,7 +127,7 @@ if __name__ == '__main__' :
             #     test_x[n_row//18].append(float(r[i]) )
         else :
             if f_row in wanted_features :
-                for i in range(2,11):
+                for i in range(6,11):
                     if f_row == 9 and r[i] == -1:
                         r[i] = r[i+1]
                     if r[i] !="NR":
@@ -172,7 +135,7 @@ if __name__ == '__main__' :
                     else:
                         test_x[n_row//18].append(0)
                 if f_row == 9 :
-                    for i in range(2,11):
+                    for i in range(6,11):
                         test_x[n_row//18].append(int(r[i])**2)
         n_row += 1 
         f_row += 1 
