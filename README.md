@@ -10,3 +10,4 @@
 	Public  : O/O	18/402
 	Private : O/O	15/402
 
+## 2017/10/27: HW3 - Image Sentiment Classification
