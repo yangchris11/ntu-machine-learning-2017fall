@@ -2,11 +2,11 @@
 ### Cheng-Yen Yang b03901086 
 
 ## 2017/09/29: HW1 - PM2.5 Prediction
-	Public  : O/O 
-	Private : X/X
+	Public  : O/O	17/445	
+	Private : X/X  133/445
 
 
 ## 2017/10/13: HW2 - Income Predicition
-	Public  : -/O
-	Private : -/-
+	Public  : O/O	18/402
+	Private : O/O	15/402
 
