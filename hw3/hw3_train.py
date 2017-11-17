@@ -143,7 +143,7 @@ if __name__ == '__main__':
     datagenerator.fit(x_train)
     callbacks = [
         ModelCheckpoint('checkpoint_whole_model.h5', monitor='val_acc', save_best_only=True, verbose=1),]
-    history = cnn_model.fit_generator(
+    cnn_model.fit_generator(
             datagenerator.flow(x_train, y_train,batch_size=batch_size,seed=7),
             steps_per_epoch = x_train.shape[0] // batch_size,
             epochs = epoch,
@@ -158,9 +158,8 @@ if __name__ == '__main__':
     print ("CNN Error: %.2f%%" % (100-scores[1]*100))
 
 # Model Saving
-    cnn_model.save_weights("cnn_model_weight.h5")
     cnn_model.save('cnn_whole_model.h5')
 
 # Print
-    print(history.history['val_acc'])
-    print(history.history['acc'])
+    # print(history.history['val_acc'])
+    # print(history.history['acc'])
