@@ -15,3 +15,5 @@
 	Private : O/O	29/366	
 
 ## 2017/11/17: HW4 - Text Sentiment Classification
+	Public  : O/O   94/344
+	Private : O/O   89/344
