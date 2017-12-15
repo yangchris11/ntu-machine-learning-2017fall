@@ -77,8 +77,7 @@ ct = 0
 for i in range(170):
     if int(compare[i]) == predict[i]:
         ct += 1
-    else: 
-        predict[i] = int(compare[i])
+
 print("wor_embedding_moedel_dim =",config.word_embedding_model_dim)
 print("wor_embedding_moedel_win =",config.word_embedding_model_win)
 print("wor_embedding_moedel_min =",config.word_embedding_model_min)
