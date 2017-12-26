@@ -9,6 +9,7 @@ Given lines of “murmur of one person” or “conversation between multiple pe
 - pretrain.py : generate files for training (word-embedding model) 
 - pretest.py : generate prediction based on word-embedding model
 - pre.sh : run pretraining and pretesting
+- preprocessing.py : gernerate files for `train.py` including `data/sentences.pickle`, `data/jieba_tokenizer.pickle`
 
 ## Model Description
 
@@ -38,6 +39,8 @@ Given lines of “murmur of one person” or “conversation between multiple pe
    |   |   +-- 5.txt   
    |   +-- testing_data.csv
    |   +-- dic.txt.big
+   |   +-- sentences.pickle
+   |   +-- jieba_tokenizer.pickle
    +-- submission
 ```
 
