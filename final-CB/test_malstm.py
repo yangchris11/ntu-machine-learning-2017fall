@@ -55,7 +55,7 @@ for i in range(len(sen)):
             jieba_tokenizer_dict[sen[i][j]] = idx
             idx += 1
 
-test_num = 5
+test_num = 170
 
 compare = []
 with open('data/self_ans.csv','r') as f:
@@ -82,11 +82,11 @@ with open('data/testing_data.csv', 'r') as f:
     Us = []
     for i in range(len(U)):
         Us += U[i]
-    print(Us)
+    #print(Us)
     tmp_Us.append(Us)
 
     Rs = process(row[2].replace(" ",""))
-    print(Rs)
+    #print(Rs)
     tmp_Rs.append(Rs)
 
 f.close()
@@ -125,15 +125,15 @@ for key, value in jieba_tokenizer_dict.items(): # key = chinese value = idx
             embedding_matrix[value] = embedding_vector
 
 
-for i in range(len(x_test_a)):
-    print(x_test_q[i])
-    print(x_test_a[i])
+#for i in range(len(x_test_a)):
+    #print(x_test_q[i])
+    #print(x_test_a[i])
 
 
 
-n_hidden = 64
+n_hidden = 128
 gradient_clipping_norm = 1.25
-batch_size = 64
+batch_size = 512
 n_epoch = 50
 
 def exponent_neg_manhattan_distance(left, right):
@@ -170,23 +170,78 @@ malstm.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['accurac
 
 malstm.load_weights('model/current_malstm_weights.h5')
 preds = malstm.predict([x_test_q,x_test_a])
-print(preds)
+#print(preds)
 
 
 ans = []
+confidence = []
 
 for i in range(test_num):
     option = []
     for j in range(6):
         option.append(preds[i*6+j])
+    print(option)
     ans.append(np.argmax(option))
-
-print(ans)
+    confidence.append(option[ans[i]])
         
 
 
-for i in range(test_num):
-    if int(compare[i]) == predict[i]:
-        ct += 1
 
-print(colored("{}/{}={}%".format(ct,test_num,ct/test_num),'red'))
+confidence_we = []
+with open('data/testing_data.csv', 'r') as f:
+  csvf = csv.reader(f)
+  next(csvf)
+  predict = [] 
+  for row in itertools.islice(csvf, test_num):
+#  for row in csvf:
+    choice_similiar = []
+
+    U = process(row[1].replace(" ",""))
+    Us = []
+    for i in range(len(U)):
+        Us += U[i]
+    # print(Us)
+
+    Rs = process(row[2].replace(" ",""))
+    # print(Rs)
+
+    for k in range(config.option_num):
+        sim = 0 
+        for i in range(len(Us)):
+            for j in range(len(Rs[k])):
+                if Us[i] in word_embedding_model and Rs[k][j] in word_embedding_model :
+                    u = word_embedding_model[Us[i]]
+                    v = word_embedding_model[[Rs[k][j]]]
+                    sim += (1 - spatial.distance.cosine(u,v))
+        sim /= (len(Us)*len(Rs[k]))
+        choice_similiar.append(sim)
+    predict.append(np.argmax(choice_similiar))
+    confidence_we.append(choice_similiar[np.argmax(choice_similiar)])
+    # print('{}/{}'.format(csvf.line_num-1,total_test_case)) 
+    # sys.stdout.flush()
+f.close()
+
+for i in range(170):
+    print(compare[i],ans[i],confidence[i],predict[i],confidence_we[i])
+
+
+wct = 0
+ct = 0
+for i in range(test_num):
+    if int(compare[i]) == ans[i]:
+        ct += 1
+    if int(compare[i]) == predict[i]:
+        wct += 1
+
+print(colored("MaLSTM:{}/{}={}%".format(ct,test_num,ct/test_num),'red')) 
+print(colored("Word-embedding:{}/{}={}%".format(wct,test_num,wct/test_num),'red'))
+
+'''
+with open(pred_file_name, 'w') as outfile:
+        print('id,ans',file=outfile)
+        for i in range(len(ans)):
+            print('{},{}'.format(i+1, ans[i]),file=outfile)
+        print(colored("Predicted testing file to {}".format(pred_file_name),'red'))
+
+
+'''

@@ -2,6 +2,7 @@ import os
 import sys
 import csv
 import config
+import itertools
 import pickle
 import logging
 import numpy as np
@@ -57,9 +58,9 @@ jieba_tokenizer_dict = {}
 
 print(word_embedding_model)
 
-# for i in range(len(sentences)):
-#     if(len(sentences[i])<4):
-#         sentences[i] += sentences[i+1]
+for i in range(len(sentences)):
+    if(len(sentences[i])<3):
+        sentences[i] += sentences[i+1]
 
 sen = sentences 
 idx = 1 
@@ -72,12 +73,22 @@ for i in range(len(sen)):
         tmp.append(jieba_tokenizer_dict[sen[i][j]])
     x_train_raw.append(tmp)
 
-for i in range(len(x_train_raw)-1):
+for i in range(len(x_train_raw)-2):
     x_train.append([x_train_raw[i], x_train_raw[i+1]])
     y_train.append(1)
+    #x_train.append([x_train_raw[i], x_train_raw[i+2]])
+    #y_train.append(1)
     x_train.append([x_train_raw[i],x_train_raw[rd.randint(0,len(x_train_raw)-1)]])
     y_train.append(0)
-    x_train.append([x_train_raw[i],x_train_raw[rd.randint(0,len(x_train_raw)-1)]])
+    rand_seq = []
+    l = rd.randint(4,10)
+    for j in range(l) :
+        pt = rd.randint(0,2)
+        if pt != 0 :
+            rand_seq.append(rd.randint(1,50000))
+        else :
+            rand_seq.append(0)
+    x_train.append([x_train_raw[i],rand_seq])
     y_train.append(0)
 
 for i in range(len(x_train)):
@@ -119,17 +130,17 @@ for key, value in jieba_tokenizer_dict.items(): # key = chinese value = idx
 
 print('embedding-done')
 
-n_hidden = 50
+n_hidden = 256
 gradient_clipping_norm = 1.25
-batch_size = 64
-n_epoch = 25
+batch_size = 512
+n_epoch = 50
 
 def exponent_neg_manhattan_distance(left, right):
     return K.exp(-K.sum(K.abs(left-right), axis=1, keepdims=True))
 
 # The visible layer
-left_input = Input(shape=(max_length,), dtype='int32')
-right_input = Input(shape=(max_length,), dtype='int32')
+left_input = Input(shape=(max_length,), dtype='float32')
+right_input = Input(shape=(max_length,), dtype='float32')
 
 embedding_layer = Embedding(53597,500, weights=[embedding_matrix], input_length=max_length, trainable=False)
 
@@ -156,20 +167,13 @@ malstm.compile(loss='mean_squared_error', optimizer=optimizer, metrics=['accurac
 
 # Start training
 
+callbacks = [EarlyStopping('val_loss', patience=10, verbose=1), 
+              ModelCheckpoint('model/current_malstm_weights.h5', save_best_only=True, save_weights_only=True, verbose=1)]
+
 malstm_trained = malstm.fit([x_train_q,x_train_a], Y_train, batch_size=batch_size, nb_epoch=n_epoch,
-                            validation_data=([x_val_q,x_val_a], Y_val))
+                            validation_data=([x_val_q,x_val_a], Y_val), callbacks=callbacks)
+
+malstm.save('model/malstm.h5')
+malstm.save_weights('model/malstm_weights.h5')
 
 
-
-
-'''padding sense
-if len() < 4 :
-    average_len = 5.96
-    max_len = 15
-if len() < 5 :
-    averge_len = 6.74
-    max_len = 17
-if len() < 6 :
-    average)len = 7.51
-    max_len = 18
-'''
