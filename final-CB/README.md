@@ -1,4 +1,4 @@
-# Conversations Prediction (ML2017 Final Project)
+# TV  Conversations Prediction (ML2017 Final Project)
 
 ## Task Description
 
@@ -10,6 +10,12 @@ Given lines of “murmur of one person” or “conversation between multiple pe
 - pretest.py : generate prediction based on word-embedding model
 - pre.sh : run pretraining and pretesting
 
+## Model Description
+
+![](https://i.imgur.com/cChyc9K.png)
+
+
+
 ## Directory 
 
 ```
@@ -17,6 +23,9 @@ Given lines of “murmur of one person” or “conversation between multiple pe
    +-- config.py
    +-- pretrain.py
    +-- pretest.py
+   +-- preprocessing.py
+   +-- train_malstm.py
+   +-- test_malstm.py
    +-- pre.sh
    +-- model
    |   +-- word_embedding_model_bin
@@ -32,4 +41,7 @@ Given lines of “murmur of one person” or “conversation between multiple pe
    +-- submission
 ```
 
-## Log 
+## Reference
+
+- Mueller, J and Thyagarajan, A. Siamese Recurrent Architectures for Learning Sentence Similarity. Proceedings of the 30th AAAI Conference on Artificial Intelligence (AAAI 2016).
+http://www.aaai.org/ocs/index.php/AAAI/AAAI16/paper/view/12195
