@@ -28,7 +28,7 @@ def process(s):
 jieba.set_dictionary(config.jieba_dict_path)
 word_embedding_model = Word2Vec.load(config.word_embedding_model_path)
 
-test_num = 170
+test_num = 5060
 
 compare = []
 with open('data/self_ans.csv','r') as f:
@@ -44,8 +44,8 @@ with open('data/testing_data.csv', 'r') as f:
   csvf = csv.reader(f)
   next(csvf)
   predict = [] 
-#   for row in itertools.islice(csvf, test_num):
-  for row in csvf:
+  for row in itertools.islice(csvf, test_num):
+  #for row in csvf:
     choice_similiar = []
 
     U = process(row[1].replace(" ",""))
@@ -73,8 +73,9 @@ with open('data/testing_data.csv', 'r') as f:
     # sys.stdout.flush()
 f.close()
 
+'''
 ct = 0 
-for i in range(170):
+for i in range(test_num):
     if int(compare[i]) == predict[i]:
         ct += 1
 
@@ -82,6 +83,7 @@ print("wor_embedding_moedel_dim =",config.word_embedding_model_dim)
 print("wor_embedding_moedel_win =",config.word_embedding_model_win)
 print("wor_embedding_moedel_min =",config.word_embedding_model_min)
 print(colored("{}/{}={}%".format(ct,test_num,ct/test_num),'red'))
+'''
 
 if config.do_predict:
     pred_file_name = config.pred_file \
