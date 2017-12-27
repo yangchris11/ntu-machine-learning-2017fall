@@ -39,11 +39,12 @@ for i in range(len(training_txt_file)):
         tmp = [ x for x in cut(row) if x != '\n' ]
         sentences.append(tmp)
 
-for i in range(len(sentences)-4):
+for i in range(len(sentences)-5):
     sentences[i] += sentences[i+1]
     sentences[i] += sentences[i+2]
     sentences[i] += sentences[i+3]
     sentences[i] += sentences[i+4]
+    sentences[i] += sentences[i+5]
 
 print("Sentences number used to pretrained =",len(sentences))
 print(colored("Finish preprocessing".format(),'yellow'))
