@@ -39,9 +39,27 @@ for i in range(len(training_txt_file)):
         tmp = [ x for x in cut(row) if x != '\n' ]
         sentences.append(tmp)
 
+tmp_time = time.time()
+
 print("Sentences number used for training data =",len(sentences))
-print("Parsing raw training data cost {} seconds".format(round(time.time()-start_time,3)))
+print("Parsing raw training data cost {} seconds".format(round(tmp_time-start_time,3)))
+pickle.dump( sentences, open( config.sentences_path , "wb" ))
+print(colored("Saved raw sentences to {}".format(config.sentences_path),'yellow'))
 
-pickle.dump( sentences, open( "data/sentencess.pickle", "wb" ))
-print(colored("Saved raw sentences to {}".format('data/sentencess.pickle'),'yellow'))
 
+jieba_tokenizer_dict = {}
+idx = 1 
+for i in range(len(sentences)):
+    tmp = [] 
+    for j in range(len(sentences[i])):
+        if sentences[i][j] not in jieba_tokenizer_dict :
+            jieba_tokenizer_dict[sentences[i][j]] = idx
+            idx += 1
+        tmp.append(jieba_tokenizer_dict[sentences[i][j]])
+
+print("Tokenizer index numbers =",idx)
+print("Tokenizing training data cost {} seconds".format(round(time.time()-tmp_time,3)))
+pickle.dump( sentences, open( config.jieba_tokenizer_path , "wb" ))
+print(colored("Saved jieba-tokenizer to {}".format(config.jieba_tokenizer_path),'yellow'))
+
+tmp_time = time.time()
