@@ -5,6 +5,7 @@ import time
 import config
 import pickle
 import logging
+import itertools
 import numpy as np
 import pandas as pd 
 from termcolor import colored,cprint
@@ -14,6 +15,10 @@ from gensim.models import Word2Vec
 
 import jieba
 jieba.set_dictionary(config.jieba_dict_path)
+
+
+
+from scipy import spatial
 
 def cut(s):
     return list(jieba.cut(s))
@@ -27,10 +32,7 @@ training_txt_file = ['data/training_data/1.txt',
                         'data/training_data/2.txt',
                         'data/training_data/3.txt',
                         'data/training_data/4.txt',
-                        'data/training_data/5.txt',
-                        'data/training_data/oov1.txt',
-                        'data/training_data/oov2.txt',
-                        'data/training_data/oov3.txt']
+                        'data/training_data/5.txt']
 sentences = []
 
 for i in range(len(training_txt_file)):
@@ -44,7 +46,6 @@ for i in range(len(sentences)-5):
     sentences[i] += sentences[i+2]
     sentences[i] += sentences[i+3]
     sentences[i] += sentences[i+4]
-    sentences[i] += sentences[i+5]
 
 print("Sentences number used to pretrained =",len(sentences))
 print(colored("Finish preprocessing".format(),'yellow'))

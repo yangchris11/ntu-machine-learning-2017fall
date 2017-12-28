@@ -70,24 +70,30 @@ with open('data/testing_data.csv', 'r') as f:
     # predict.append(np.argmax(choice_similiar))
 
     q = np.zeros(config.word_embedding_model_dim)
+    qct = 0 
     for i in range(len(Us)):
         if Us[i] in word_embedding_model :
             q += word_embedding_model[Us[i]] 
-    q /= len(Us)
+            qct += 1 
+    if qct != 0:
+        q /= qct
     preds = []
     for k in range(config.option_num):
         a = np.zeros(config.word_embedding_model_dim)
+        act = 0 
         for i in range(len(Rs[k])):
             if Rs[k][i] in word_embedding_model :
                 a += word_embedding_model[Rs[k][i]]
-        a /= len(Rs[k])
+                act += 1
+        if act != 0:
+            a /= act
         if q.all() != np.zeros(config.word_embedding_model_dim).all() and a.all() != np.zeros(config.word_embedding_model_dim).all():
             sim = (1 - spatial.distance.cosine(q,a))
         preds.append(sim)
     predict.append(np.argmax(preds))
 
-    print('{}/{}'.format(csvf.line_num-1,total_test_case)) 
-    sys.stdout.flush()
+    # print('{}/{}'.format(csvf.line_num-1,total_test_case)) 
+    # sys.stdout.flush()
 f.close()
 
 
@@ -95,6 +101,7 @@ ct = 0
 for i in range(200):
     if int(compare[i]) == predict[i]:
         ct += 1
+
 
 print("wor_embedding_moedel_dim =",config.word_embedding_model_dim)
 print("wor_embedding_moedel_win =",config.word_embedding_model_win)
