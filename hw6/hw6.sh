@@ -1,2 +1,2 @@
 #!/bin/bash 
-python3 p3.py $1 $2 $3 
+python3 hw6_best.py $1 $2 $3 
