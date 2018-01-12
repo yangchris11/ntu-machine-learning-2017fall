@@ -4,7 +4,6 @@ import numpy as np
 
 from skimage import io
 
-
 def scale(M):
     M -= np.min(M)
     M /= np.max(M)
