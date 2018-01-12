@@ -63,7 +63,7 @@ clf.fit(reduced_data)
 
 predict = clf.predict(reduced_data)
 
-test = pd.read_csv('test_case.csv')
+test = pd.read_csv(test_case_path)
 img_1 = np.array(test.image1_index)
 img_2 = np.array(test.image2_index)
 ID = np.array(test.ID)
