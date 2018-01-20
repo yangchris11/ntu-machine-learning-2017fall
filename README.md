@@ -17,3 +17,11 @@
 ## 2017/11/17: HW4 - Text Sentiment Classification
 	Public  : O/O   94/344
 	Private : O/O   89/344
+
+## 2017/12/08: HW5 - Movie Recommondation
+	Public	: O/O  171/335
+	Private	: O/O  167/335
+
+## 2017/12/15L HW6 - Unsupervised Learning & Dimension Reduction
+	Public	: O/O   33/333
+	Pribate : O/O   32/333
