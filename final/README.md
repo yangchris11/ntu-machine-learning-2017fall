@@ -29,8 +29,8 @@
 
 1. Run `mkdir data/training_data` and download the training file into the `data/training_data/`
 2. Download the testing file into the `data/` and rename it into `testing_data.csv`
-3. Run `bash test.sh ../data/testing_data.csv ../save/pred.csv` under `src/` directory.
-4. `save/pred.csv` is the reproducing prediction file.
+3. Run `bash test.sh ../data/testing_data.csv ../save/voting.csv` under `src/` directory.
+4. `save/voting.csv` is the reproducing prediction file.
 
 ## Directory 
 
