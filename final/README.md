@@ -13,6 +13,7 @@
 * python 3.5+
 * keras 2.0.8
 * numpy 1.13.3
+* gensim 3.1.0
 * jieba 0.39
 * scipy 0.19.1
 * termcolor 1.1.0
